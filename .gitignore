@@ -1,0 +1,16 @@
+.tools/
+.local/
+study/
+.env
+.env.*
+!.env.example
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/test-results/
+**/playwright-report/
+.DS_Store
+__pycache__/
+
+*.tsbuildinfo
