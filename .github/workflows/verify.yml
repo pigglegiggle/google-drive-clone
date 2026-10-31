@@ -1,0 +1,36 @@
+name: Verify
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  full-stack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python3 scripts/configure.py
+      - run: docker compose config --quiet
+      - run: docker compose up -d --build --wait --wait-timeout 180
+      - run: BASE_URL=http://localhost:8090 python3 tests/integration.py
+      - run: BASE_URL=http://localhost:8090 python3 tests/database_checks.py --compose
+      - run: npm ci --prefix frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: UI_URL=http://localhost:8090 npm run test:e2e --prefix frontend
+      - name: Check restart recovery
+        run: python3 tests/recovery.py --compose
+      - name: Service logs
+        if: failure()
+        run: docker compose logs --tail=100
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-traces
+          path: frontend/test-results/
+      - run: docker compose down
+        if: always()
