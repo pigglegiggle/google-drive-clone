@@ -1,0 +1,78 @@
+name: google-drive-clone
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: drive
+      POSTGRES_USER: drive
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/configure.py first}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U drive -d drive"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  minio:
+    build: ./infra/minio
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?Set S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?Set S3_SECRET_KEY}
+      MINIO_API_STALE_UPLOADS_EXPIRY: 48h
+      MINIO_API_STALE_UPLOADS_CLEANUP_INTERVAL: 1h
+    command: [server, /data, --address, ':9000', --console-address, ':9001']
+    volumes:
+      - object-data:/data
+    ports:
+      - '${BIND_ADDRESS:-127.0.0.1}:${S3_PORT:-9000}:9000'
+      - '127.0.0.1:${S3_CONSOLE_PORT:-9001}:9001'
+    healthcheck:
+      test: [CMD, curl, -f, http://localhost:9000/minio/health/live]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: Host=postgres;Database=drive;Username=drive;Password=${POSTGRES_PASSWORD}
+      S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: drive
+      SECURE_COOKIES: ${SECURE_COOKIES:-false}
+    volumes:
+      - cookie-keys:/app/keys
+    tmpfs:
+      - /app/parts:uid=1654,gid=1654,mode=0700,size=128m
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, dotnet, Drive.dll, --healthcheck]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  web:
+    build: ./frontend
+    ports:
+      - '${BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8090}:80'
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost/api/health]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+volumes:
+  postgres-data:
+  object-data:
+  cookie-keys:

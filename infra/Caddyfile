@@ -1,0 +1,6 @@
+{$APP_DOMAIN} {
+    reverse_proxy web:80
+}
+{$S3_DOMAIN} {
+    reverse_proxy minio:9000
+}
