@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram name="upload-flow">
+    <mxGraphModel pageWidth="1200" pageHeight="440">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="Resumable upload — from file to published version" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=24;fontColor=#111111;fillColor=#ffffff;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="0" y="12" width="1200" height="40" />
+        </mxCell>
+        <mxCell id="3" value="Browser hashes file&#10;SHA-256 in a worker" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=#222222;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="110" width="240" height="85" />
+        </mxCell>
+        <mxCell id="4" value="Reserve quota&#10;Persist upload session" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=#222222;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="330" y="110" width="240" height="85" />
+        </mxCell>
+        <mxCell id="5" value="Upload 8 MiB parts&#10;Hash + S3 + saved ETag" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=#222222;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="630" y="110" width="240" height="85" />
+        </mxCell>
+        <mxCell id="6" value="Complete + verify&#10;Check whole-file SHA-256" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=#222222;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="930" y="110" width="240" height="85" />
+        </mxCell>
+        <mxCell id="7" style="endArrow=block;endFill=1;strokeColor=#222222;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="270" y="152" />
+            <mxPoint as="targetPoint" x="330" y="152" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8" style="endArrow=block;endFill=1;strokeColor=#222222;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="570" y="152" />
+            <mxPoint as="targetPoint" x="630" y="152" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9" style="endArrow=block;endFill=1;strokeColor=#222222;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="870" y="152" />
+            <mxPoint as="targetPoint" x="930" y="152" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="10" value="Resume original file&#10;Skip confirmed parts" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=#222222;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="330" y="290" width="240" height="80" />
+        </mxCell>
+        <mxCell id="11" value="Publish metadata&#10;One file version + object" style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=#222222;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="930" y="290" width="240" height="80" />
+        </mxCell>
+        <mxCell id="12" style="endArrow=block;endFill=1;strokeColor=#222222;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="450" y="195" />
+            <mxPoint as="targetPoint" x="450" y="290" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="13" style="endArrow=block;endFill=1;strokeColor=#222222;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="570" y="330" />
+            <mxPoint as="targetPoint" x="750" y="195" />
+            <Array as="points">
+              <mxPoint x="750" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="14" style="endArrow=block;endFill=1;strokeColor=#222222;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1050" y="195" />
+            <mxPoint as="targetPoint" x="1050" y="290" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15" value="Repeated completion returns the same file; a checksum mismatch never publishes a version." style="whiteSpace=wrap;html=0;fontFamily=Arial;fontSize=17;fontColor=#111111;fillColor=#ffffff;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="0" y="390" width="1200" height="30" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
