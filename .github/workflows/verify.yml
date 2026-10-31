@@ -26,7 +26,14 @@ jobs:
         run: python3 tests/recovery.py --compose
       - name: Service logs
         if: failure()
-        run: docker compose logs --tail=100
+        run: |
+          docker compose logs --tail=100
+          for service in postgres minio api web; do
+            container=$(docker compose ps -aq "$service")
+            if [ -n "$container" ]; then
+              docker inspect --format '{{json .State.Health}}' "$container"
+            fi
+          done
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
