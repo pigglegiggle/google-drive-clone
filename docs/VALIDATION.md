@@ -29,6 +29,16 @@ The quota test's request count includes polling for the 30-second worker and var
 
 ## Docker checks
 
-`compose.yaml` and the HTTPS override define the full self-hosted stack. GitHub Actions is configured to build it and run the same real-storage HTTP/browser tests plus a container restart test. Consult the actual [workflow runs](https://github.com/pigglegiggle/google-drive-clone/actions) for Docker results. This document does not treat the presence of that workflow as evidence of a successful run.
+The full base Compose stack was built and exercised on a GitHub-hosted Ubuntu runner. Evidence reviewed on **2 November 2026 (Asia/Bangkok)**:
+
+- Tested application commit: `17ef1196ab156cba82b9a3899607acf3f728b7c6`.
+- [Successful verification run](https://github.com/pigglegiggle/google-drive-clone/actions/runs/41252708727).
+- Built API, web and upstream MinIO images; PostgreSQL, MinIO, API and web all became healthy.
+- **95 integration checks passed** against containerized PostgreSQL and upstream MinIO.
+- Concurrent quota reservation, persisted expiry, Trash accounting and deletion release passed.
+- **Four browser workflows passed** against the production Nginx-served bundle.
+- API container restart between parts preserved the session cookie and confirmed parts; resumed download matched the original bytes.
+
+The first run built all images but exposed a web health-check failure caused by using `localhost` with an IPv4 listener. Commit `17ef119` changed the probe to `127.0.0.1`; the complete rerun above passed. The HTTPS override and backup/restore procedure are documented separately and were not exercised by this run.
 
 Backup/restore, public-domain HTTPS certificate issuance, native Windows execution and multi-replica operation were not executed locally. Windows instructions use Docker Desktop Linux containers or WSL2, not native Windows MinIO/.NET Framework services.

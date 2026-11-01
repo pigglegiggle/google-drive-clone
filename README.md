@@ -100,7 +100,7 @@ PowerShell: set `$env:BASE_URL = 'http://localhost:8090'` and `$env:UI_URL = 'ht
 
 The integration suite uses real HTTP, PostgreSQL and S3 storage. It exercises binary multipart uploads, confirmed-part reuse, wrong checksums, duplicate finalization, access revocation during upload, public-link revocation, version restore, hidden ancestors, empty files, name-conflict recovery and recursive deletion. Four browser tests exercise actual UI workflows, pause/resume, file moves and narrow screens. Restart tests stop the API between parts and verify that both the authentication cookie and upload survive.
 
-[Validation evidence](docs/VALIDATION.md) records the environment actually executed. GitHub Actions also defines a full Compose build, integration suite, browser suite and container restart check. **A workflow definition alone is not a successful Docker test.**
+[Validation evidence](docs/VALIDATION.md) records the environment actually executed. The [full Docker Compose verification](https://github.com/pigglegiggle/google-drive-clone/actions/runs/41252708727) passed with source-built upstream MinIO, 95 integration checks, quota/expiry checks, four browser workflows and API-container restart recovery.
 
 ## Repository map
 
